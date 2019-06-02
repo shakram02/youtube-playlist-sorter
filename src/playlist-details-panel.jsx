@@ -52,7 +52,7 @@ class PlaylistDetailsPanel extends React.Component {
       progressCircle = <CircularProgressbar percentage={this.state.percentComplete} textForPercentage={() => ""} />
     }
 
-    return(
+    return (
       <div className="content-panel container">
         <div className="row">
           <div className="col-xs-4 back-link">
@@ -147,7 +147,7 @@ class PlaylistDetailsPanel extends React.Component {
         }
 
         response.json().then((data) => {
-          for(let playlistItem of data.items) {
+          for (let playlistItem of data.items) {
             // Playlists can contain videos that have since been deleted. We want to omit
             // these items. The only way I can see to determine this is if thumbnails is undefined.
             if (playlistItem.snippet.thumbnails) {
@@ -167,19 +167,35 @@ class PlaylistDetailsPanel extends React.Component {
 
   sortPlaylistItems(playlistItems, isDescending) {
     playlistItems.sort((a, b) => {
+      var firstTitle = a.snippet.title
+      var secondTitle = b.snippet.title
+      // TODO: handle the case when there is no number in any of the names
+      var firstCompareVal = null
+      var secondCompareVal = null
+
+      try {
+        var firstNum = parseInt(firstTitle.match(/\d+/)[0])
+        var secondNum = parseInt(secondTitle.match(/\d+/)[0])
+        firstCompareVal = firstNum
+        secondCompareVal = secondNum
+      } catch (error) {
+        firstCompareVal = firstTitle
+        secondCompareVal = secondTitle
+      }
+
       if (isDescending) {
-        if (b.snippet.title < a.snippet.title) {
+        if (secondCompareVal < firstCompareVal) {
           return -1
         }
-        if (b.snippet.title > a.snippet.title) {
+        if (secondCompareVal > firstCompareVal) {
           return 1
         }
         return 0
       } else {
-        if (a.snippet.title < b.snippet.title) {
+        if (firstCompareVal < secondCompareVal) {
           return -1
         }
-        if (a.snippet.title > b.snippet.title) {
+        if (firstCompareVal > secondCompareVal) {
           return 1
         }
         return 0
